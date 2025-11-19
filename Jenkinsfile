@@ -9,7 +9,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                bat 'mvn clean install'
             }
         }
 
@@ -19,10 +19,10 @@ pipeline {
                     def scannerHome = tool 'SonarScanner'
                 }
                 withSonarQubeEnv('SonarServer') {
-                    sh """
-                        ${tool('SonarScanner')}/bin/sonar-scanner \
-                          -Dsonar.projectKey=lab12 \
-                          -Dsonar.sources=. \
+                    bat """
+                        "${tool('SonarScanner')}\\bin\\sonar-scanner.bat" ^
+                          -Dsonar.projectKey=lab12 ^
+                          -Dsonar.sources=. ^
                           -Dsonar.java.binaries=target
                     """
                 }
