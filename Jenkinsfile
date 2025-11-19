@@ -1,39 +1,22 @@
 pipeline {
     agent any
 
-    tools {
-        // Assumes 'MAVEN_HOME' is a configured tool name in Jenkins
-        maven 'MAVEN_HOME'
-    }
-
     stages {
-
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                // FIX: Navigate to the subdirectory containing the pom.xml
-                dir('my-project-root') { 
-                    bat 'mvn clean install'
-                }
+                checkout scm
             }
         }
 
         stage('SonarQube Scan') {
             steps {
-                script {
-                    def scannerHome = tool 'SonarScanner'
-                }
-                
-                // FIX: Run the Sonar scan from the project root so it finds the pom.xml and 'target'
-                dir('my-project-root') {
-                    withSonarQubeEnv('SonarServer') {
-                        // Using a multiline bat command for readability and consistency
-                        bat """
-                            "${tool('SonarScanner')}\\bin\\sonar-scanner.bat" ^
-                            -Dsonar.projectKey=lab12 ^
-                            -Dsonar.sources=. ^
-                            -Dsonar.java.binaries=target
-                        """
-                    }
+                withSonarQubeEnv('SonarServer') {
+                    bat """
+                        "${tool('SonarScanner')}\\bin\\sonar-scanner.bat" ^
+                          -Dsonar.projectKey=secure-coding ^
+                          -Dsonar.sources=. ^
+                          -Dsonar.inclusions=**/*.py,**/*.js,**/*.html
+                    """
                 }
             }
         }
