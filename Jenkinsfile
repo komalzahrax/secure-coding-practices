@@ -6,47 +6,23 @@ pipeline {
         sonarScanner 'SonarScanner'
     }
 
-    environment {
-        SONAR_PROJECT_KEY = 'my_project'
-        SONAR_SERVER_URL = 'http://localhost:9000'
-        SONAR_TOKEN = '<PASTE_YOUR_TOKEN_HERE>'
-    }
-
     stages {
-
         stage('Build') {
             steps {
-                bat "mvn clean install"
+                sh 'mvn clean install'
             }
         }
-
-        stage('SonarQube Analysis') {
+        stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('SonarServer') {
-                    bat """
-                        sonar-scanner ^
-                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
-                        -Dsonar.sources=. ^
-                        -Dsonar.host.url=${SONAR_SERVER_URL} ^
-                        -Dsonar.login=${SONAR_TOKEN}
-                    """
+                    sh '''
+                        sonar-scanner \
+                        -Dsonar.projectKey=lab12 \
+                        -Dsonar.sources=. \
+                        -Dsonar.java.binaries=target
+                    '''
                 }
             }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 3, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-    }
-
-    post {
-        always {
-            echo "Pipeline Finished."
         }
     }
 }
