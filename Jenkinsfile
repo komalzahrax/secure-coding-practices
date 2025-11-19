@@ -1,75 +1,52 @@
 pipeline {
     agent any
 
-    stages {
+    tools {
+        maven 'MAVEN_HOME'
+        sonarScanner 'SonarScanner'
+    }
 
-        stage('Checkout Code') {
-            steps {
-                echo 'Checking out code...'
-            }
-        }
+    environment {
+        SONAR_PROJECT_KEY = 'my_project'
+        SONAR_SERVER_URL = 'http://localhost:9000'
+        SONAR_TOKEN = '<PASTE_YOUR_TOKEN_HERE>'
+    }
+
+    stages {
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
+                bat "mvn clean install"
             }
         }
 
-        stage('Static Code Analysis (SAST)') {
+        stage('SonarQube Analysis') {
             steps {
-                echo 'Running SAST scan (simulated)...'
+                withSonarQubeEnv('SonarServer') {
+                    bat """
+                        sonar-scanner ^
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.host.url=${SONAR_SERVER_URL} ^
+                        -Dsonar.login=${SONAR_TOKEN}
+                    """
+                }
             }
         }
 
-        stage('Dependency Check') {
+        stage('Quality Gate') {
             steps {
-                echo 'Running dependency check (simulated)...'
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
 
-        stage('Container Security Scan') {
-            steps {
-                echo 'Running container scan (simulated)...'
-            }
-        }
-
-        stage('Unit Tests') {
-            steps {
-                echo 'Running unit tests...'
-            }
-        }
-
-        stage('Deploy to Staging') {
-            steps {
-                echo 'Deploying to staging environment...'
-            }
-        }
-
-        stage('Security Gate') {
-            steps {
-                echo 'Checking security gate (simulated)...'
-            }
-        }
-
-        stage('Deploy to Production') {
-            when {
-                branch 'main'
-            }
-            steps {
-                echo 'Deploying to production (main branch)...'
-            }
-        }
     }
 
     post {
         always {
-            echo 'Archiving security reports (simulated)...'
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
+            echo "Pipeline Finished."
         }
     }
 }
