@@ -2,34 +2,74 @@ pipeline {
     agent any
 
     stages {
+
+        stage('Checkout Code') {
+            steps {
+                echo 'Checking out code...'
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo 'Building the project...'
             }
         }
 
-        stage('Test') {
+        stage('Static Code Analysis (SAST)') {
             steps {
-                echo 'Testing..'
+                echo 'Running SAST scan (simulated)...'
             }
         }
 
-        stage('Deploy') {
+        stage('Dependency Check') {
             steps {
-                echo 'Deploying...'
+                echo 'Running dependency check (simulated)...'
+            }
+        }
+
+        stage('Container Security Scan') {
+            steps {
+                echo 'Running container scan (simulated)...'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo 'Running unit tests...'
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Deploying to staging environment...'
+            }
+        }
+
+        stage('Security Gate') {
+            steps {
+                echo 'Checking security gate (simulated)...'
+            }
+        }
+
+        stage('Deploy to Production') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Deploying to production (main branch)...'
             }
         }
     }
 
     post {
         always {
-            echo 'Post-build actions executed!'
+            echo 'Archiving security reports (simulated)...'
         }
         success {
-            echo 'Build succeeded!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Pipeline failed!'
         }
     }
 }
