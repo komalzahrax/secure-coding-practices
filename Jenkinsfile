@@ -3,7 +3,6 @@ pipeline {
 
     tools {
         maven 'MAVEN_HOME'
-        sonarRunner 'SonarScanner'
     }
 
     stages {
@@ -16,13 +15,16 @@ pipeline {
 
         stage('SonarQube Scan') {
             steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                }
                 withSonarQubeEnv('SonarServer') {
-                    sh '''
-                        sonar-scanner \
+                    sh """
+                        ${tool('SonarScanner')}/bin/sonar-scanner \
                           -Dsonar.projectKey=lab12 \
                           -Dsonar.sources=. \
                           -Dsonar.java.binaries=target
-                    '''
+                    """
                 }
             }
         }
