@@ -1,3 +1,4 @@
+// Added SonarQube quality gate – Komal Zahra (22i-1613
 pipeline {
     agent any
 
