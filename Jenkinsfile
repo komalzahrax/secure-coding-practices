@@ -1,4 +1,5 @@
-// Version from Bash1 – conflict test – Komal Zahra (22i-1613)
+// Version from Bash2 – Komal Zahra (22i-1613)
+>>>>>>> 5c2c443219c7dd101dc38a8cafc7a709ef529a70
 pipeline {
     agent any
 
